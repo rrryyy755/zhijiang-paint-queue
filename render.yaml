@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     region: singapore
-    buildCommand: npm ci --omit=dev
+    buildCommand: npm ci --omit=dev && mkdir -p build && cp api.mjs app.js app.css build/
     startCommand: npm start
     healthCheckPath: /healthz
     envVars:
