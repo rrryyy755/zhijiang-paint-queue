@@ -1,0 +1,18 @@
+[build]
+  command = "node netlify-build.mjs"
+  publish = "public"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/admin"
+  to = "/index.html"
+  status = 200
+
+[template.environment]
+  ADMIN_KEY = "设置至少16位的工作人员管理密码"
