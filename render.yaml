@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: zhijiang-paint-queue
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: 24.18.0
+      - key: ADMIN_KEY
+        generateValue: true
+      - key: QUEUE_DEMO
+        value: "false"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: zhijiang-paint-db
+          property: connectionString
+databases:
+  - name: zhijiang-paint-db
+    plan: free
+    region: singapore
+    databaseName: paint_queue
+    ipAllowList: []
