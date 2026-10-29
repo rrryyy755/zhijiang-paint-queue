@@ -11,4 +11,5 @@ api=api.replace('"../postgres-env.mjs"','"../../netlify-env.mjs"').replace("'../
 api+='\nimport {transaction} from "../../netlify-env.mjs";\nexport default async function handler(request){if(!["GET","POST"].includes(request.method))return new Response("Method not allowed",{status:405});if(request.method==="POST"&&(!process.env.ADMIN_KEY||process.env.ADMIN_KEY.length<16))return Response.json({error:"请先配置至少16位的工作人员管理密码"},{status:503});try{return await transaction(()=>request.method==="POST"?POST(request):GET(request))}catch(e){console.error("Queue database request failed",e.code||e.name);return Response.json({error:"队列暂时无法连接，请稍后刷新"},{status:503,headers:{"Cache-Control":"no-store"}})}}\nexport const config={path:"/api/queue"};\n';
 await writeFile('netlify/functions/queue.mjs',api);
 await writeFile('netlify/database/migrations/202610280001_create_tickets.sql',await readFile('queue-schema.sql','utf8'));
+await writeFile('netlify/database/migrations/202610290001_add_phone_key.sql',await readFile('queue-phone-schema.sql','utf8'));
 console.log('Built customer page, staff page, queue function and database migration');

@@ -12,7 +12,11 @@ export async function transaction(fn){
  try{
   await client.query('BEGIN');
   await client.query('SELECT pg_advisory_xact_lock(11012026)');
-  if(demo&&!testTableReady)await client.query("CREATE TABLE IF NOT EXISTS tickets_test(id SERIAL PRIMARY KEY,device TEXT UNIQUE,kind TEXT NOT NULL CHECK(kind IN ('basic','complex')),status TEXT NOT NULL DEFAULT 'waiting' CHECK(status IN ('waiting','called','serving','done','missed')),created BIGINT NOT NULL,called BIGINT,started BIGINT,finished BIGINT,code TEXT UNIQUE)");
+  if(demo&&!testTableReady){
+   await client.query("CREATE TABLE IF NOT EXISTS tickets_test(id SERIAL PRIMARY KEY,device TEXT UNIQUE,kind TEXT NOT NULL CHECK(kind IN ('basic','complex')),status TEXT NOT NULL DEFAULT 'waiting' CHECK(status IN ('waiting','called','serving','done','missed')),created BIGINT NOT NULL,called BIGINT,started BIGINT,finished BIGINT,code TEXT UNIQUE,phone_key TEXT)");
+   await client.query('ALTER TABLE tickets_test ADD COLUMN IF NOT EXISTS phone_key TEXT');
+   await client.query('CREATE UNIQUE INDEX IF NOT EXISTS tickets_test_phone_key_unique ON tickets_test(phone_key)');
+  }
   const result=await scope.run({client,demo},fn);
   const commit=await client.query('COMMIT');
   if(demo&&commit.command==='COMMIT')testTableReady=true;
